@@ -1,5 +1,4 @@
 require 'rubygems'
-require File.dirname(__FILE__) + "/hash_ext.rb"
 
 module ESpeak
   
@@ -23,9 +22,8 @@ module ESpeak
 private
 
   def prepare_options(options)
-    options.symbolize_keys!
-    raise "You must provide value for :text key in options" unless options[:text]
-    sanitize_text!(options[:text])
+    raise "You must provide value for :text key in options" unless options['text']
+    sanitize_text!(options['text'])
     default_espeak_options.merge(options)
   end
 
@@ -47,14 +45,14 @@ private
   end
 
   def execute_system_command(filename, options)
-    system([espeak_command(options), lame_command(filename)] * " | ")
+   system([espeak_command(options), lame_command(filename)] * " | ")
   end
 
   def espeak_command(options)
-    %|espeak "#{options[:text]}" --stdout -v#{options[:voice]} -p#{options[:pitch]} -s#{options[:speed]}|
+    %|./espeak "#{options['text']}" --stdout -v "#{options['voice']}#{options['gender'].blank? ? '' : '+' + options['gender']}" -p #{options['pitch']} -s #{options['speed']}|
   end
 
   def lame_command(filename)
-    "lame -V2 - #{filename}"
+    "lame -V2 - \"#{filename}\""
   end
 end
